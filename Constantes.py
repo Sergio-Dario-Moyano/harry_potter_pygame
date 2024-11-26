@@ -31,6 +31,7 @@ TAMAÑO_BOTON_VOLUMEN = (60,60)
 TAMAÑO_BOTON_VOLVER = (100,40)
 
 
+FUENTE_18 = pygame.font.SysFont("Arial",18)
 FUENTE_22 = pygame.font.SysFont("Arial",22)
 FUENTE_25 = pygame.font.SysFont("Arial",25)
 FUENTE_27 = pygame.font.SysFont("Arial",27)
@@ -52,3 +53,6 @@ BOTON_JUGAR = 0
 BOTON_AJUSTES = 1
 BOTON_RANKINGS = 2
 BOTON_SALIR = 3
+
+#Nuevo
+TAMAÑO_RANKING = (250,80)
