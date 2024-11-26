@@ -1,3 +1,5 @@
+import os
+import json
 from Constantes import *
 import random
 import pygame
@@ -21,25 +23,42 @@ def mostrar_texto(surface, text, pos, font, color=pygame.Color('black')):
         y += word_height  # Start on new row.
 
 
+def cargar_json(datos: dict) -> bool:
+    archivo_json = "partidas.json"
+    arr_datos = []
+
+    # Si el archivo existe, cargar los datos actuales
+    if os.path.exists(archivo_json):
+        with open(archivo_json, "r", encoding="utf-8") as archivo:
+            try:
+                arr_datos = json.load(archivo)
+            except json.JSONDecodeError:
+                arr_datos = []  # Si el archivo está vacío o corrupto, iniciar como lista vacía
+
+    # Agregar los nuevos datos
+    arr_datos.append(datos)
+
+    # Sobrescribir el archivo con los datos actualizados
+    with open(archivo_json, "w", encoding="utf-8") as archivo:
+        json.dump(arr_datos, archivo, indent=4)
+
+    return True
+
+
+
+def pedir_nombre(mensaje:str, mensaje_error:str, puntos:int) -> None:
+    while True:
+        nombre = input(mensaje)
+        if len(nombre) >= 3:
+            fecha_actual = datetime.now()
+            solo_fecha = fecha_actual.strftime("%d/%m/%y")
+            datos = {"nombre": nombre, "fecha": solo_fecha, "puntos": puntos}
+            cargar_json(datos)
+            print("Nombre guardado exitosamente en el ranking.")
+            break
+        else:
+            print(mensaje_error)
 
 
 
 
-
-# def pedir_nombre(mensaje, mensaje_error) -> str:
-   
-#     nombre = input(mensaje)
-#     while True:
-#         if len(nombre) >= 3:
-#             fecha_actual = datetime.now()
-#             solo_fecha = fecha_actual.strftime("%d/%m/%y")
-#             break
-#         else:
-#             nombre = input(mensaje_error)
-
-#     print("Nombre validado exitosamente!!!")
-#     datos = [nombre,solo_fecha]
-#     return datos
-
-# res = pedir_nombre("Ingrese su nombre para el ranking: ", "!ERROR¡ Nombre demasiado corto, debe tener al menos 3 caracteres. Reingrese un nombre: ")
-# print(res)

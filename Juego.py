@@ -74,16 +74,21 @@ def mostrar_juego(pantalla:pygame.Surface,cola_eventos:list[pygame.event.Event],
                         acumula_puntos = 0
 
                         
-                        if datos_juego["cantidad_vidas"] > 1:
+                        if datos_juego["cantidad_vidas"] > 0:
                             datos_juego["cantidad_vidas"] -= 1
 
                             if datos_juego["puntuacion"] > 0:
                                 datos_juego["puntuacion"] -= PUNTUACION_ERROR
                             retorno = "juego"
                             print(f"RESPUESTA INCORRECTA! Te quedan {datos_juego['cantidad_vidas']} vidas")
-
                         else:
                             retorno = "terminado"
+                            pedir_nombre(
+                                "Ingrese su nombre para el ranking: ",
+                                "!ERROR¡ Nombre demasiado corto, debe tener al menos 3 caracteres. Reingrese un nombre: ",
+                                datos_juego["puntuacion"]
+                            )
+     
                             
                     indice += 1
                     
