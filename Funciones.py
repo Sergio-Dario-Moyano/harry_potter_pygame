@@ -4,6 +4,7 @@ from Constantes import *
 import random
 import pygame
 from datetime import datetime
+# from Terminado import *
 
 def mostrar_texto(surface, text, pos, font, color=pygame.Color('black')):
     words = [word.split(' ') for word in text.splitlines()]  # 2D array where each row is a list of words.

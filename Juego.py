@@ -82,13 +82,13 @@ def mostrar_juego(pantalla:pygame.Surface,cola_eventos:list[pygame.event.Event],
                             retorno = "juego"
                             print(f"RESPUESTA INCORRECTA! Te quedan {datos_juego['cantidad_vidas']} vidas")
                         else:
+                            #llamar a la funcion mostrar_fin_juego()
                             retorno = "terminado"
                             pedir_nombre(
                                 "Ingrese su nombre para el ranking: ",
                                 "!ERROR¡ Nombre demasiado corto, debe tener al menos 3 caracteres. Reingrese un nombre: ",
                                 datos_juego["puntuacion"]
                             )
-     
                             
                     indice += 1
                     
