@@ -35,9 +35,6 @@ def mostrar_rankings(pantalla:pygame.Surface,cola_eventos:list[pygame.event.Even
     else:
         ranking = []
 
-
-
-
     lista_res = []
 
     for i in range(len(ranking)):

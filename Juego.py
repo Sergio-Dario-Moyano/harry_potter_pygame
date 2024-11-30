@@ -11,6 +11,11 @@ cuadro_pregunta["superficie"] = pygame.transform.scale(cuadro_pregunta["superfic
 cuadro_pregunta["rectangulo"] = cuadro_pregunta["superficie"].get_rect()
 #cuadro_pregunta["superficie"].fill(COLOR_ROJO)
 
+comodin = {}
+comodin["superficie"] = pygame.Surface(TAMAÑO_RESPUESTA)
+comodin["rectangulo"] = comodin["superficie"].get_rect()
+# comodin["superficie"].fill(255,255,255)
+
 lista_respuestas = []
 
 # for i in range(3): --> original
@@ -23,15 +28,22 @@ for i in range(4):
 
 indice = 0 #Son inmutables
 bandera_respuesta = False #Son inmutables
-acumula_puntos = 0
+acumula_puntos = 0 #acumula aciertos y da una vida cuando hay 5 seguidos
 random.shuffle(lista_preguntas)
 
 def mostrar_juego(pantalla:pygame.Surface,cola_eventos:list[pygame.event.Event],datos_juego:dict) -> str:
     global indice
     global bandera_respuesta
-    global acumula_puntos
+    # global acumula_puntos
 
-    print(f"DATOS DEL JUEGO: {len(lista_respuestas)}")
+
+       #TEMPORIZADOR
+    #-------------
+    superficie_reloj = {}
+    superficie_reloj["superficie"] = pygame.Surface((180,50))
+    superficie_reloj["rectangulo"] = superficie_reloj["superficie"].get_rect()
+    
+
     
     retorno = "juego"
     if bandera_respuesta:
@@ -47,48 +59,52 @@ def mostrar_juego(pantalla:pygame.Surface,cola_eventos:list[pygame.event.Event],
     pregunta_actual = lista_preguntas[indice]
     
     for evento in cola_eventos:
+ 
         if evento.type == pygame.QUIT:
             retorno = "salir"
         elif evento.type == pygame.MOUSEBUTTONDOWN:
+           
             for i in range(len(lista_respuestas)):
+
                 if lista_respuestas[i]["rectangulo"].collidepoint(evento.pos):
                     respuesta_seleccionada = (i + 1)
-
-                    print(f"Respuesta correcta: {pregunta_actual["respuesta_correcta"]}")
-                    print(f"Respuesta seleccionada: {respuesta_seleccionada}")
+                   
                    
                     if respuesta_seleccionada == int(pregunta_actual["respuesta_correcta"]):
                     
-                        ACIERTO_SONIDO.play()
-                        print("RESPUESTA CORRECTA")
-                        lista_respuestas[i]["superficie"].fill(COLOR_VERDE_OSCURO)
-                        datos_juego["puntuacion"] += PUNTUACION_ACIERTO
-                        acumula_puntos += 1
+                        respuesta_correcta(datos_juego, lista_respuestas, i)
+                    #     ACIERTO_SONIDO.play()
+                    #     print("RESPUESTA CORRECTA")
+                    #     lista_respuestas[i]["superficie"].fill(COLOR_VERDE_OSCURO)
+                    #     datos_juego["puntuacion"] += PUNTUACION_ACIERTO
+                    #     acumula_puntos += 1
 
-                        if acumula_puntos == 5:
-                            datos_juego["cantidad_vidas"] += 1
-                            acumula_puntos = 0
+                    #     if acumula_puntos == 5:
+                    #         datos_juego["cantidad_vidas"] += 1
+                    #         acumula_puntos = 0
+                    # else:
+                    #     ERROR_SONIDO.play()
+                    #     lista_respuestas[i]["superficie"].fill(COLOR_ROJO)
+                    #     acumula_puntos = 0
                     else:
-                        ERROR_SONIDO.play()
-                        lista_respuestas[i]["superficie"].fill(COLOR_ROJO)
-                        acumula_puntos = 0
-
+                        respuesta_incorrecta(datos_juego, lista_respuestas, i, retorno)
                         
-                        if datos_juego["cantidad_vidas"] > 0:
-                            datos_juego["cantidad_vidas"] -= 1
+                        # if datos_juego["cantidad_vidas"] > 0:
+                        #     datos_juego["cantidad_vidas"] -= 1
 
-                            if datos_juego["puntuacion"] > 0:
-                                datos_juego["puntuacion"] -= PUNTUACION_ERROR
-                            retorno = "juego"
-                            print(f"RESPUESTA INCORRECTA! Te quedan {datos_juego['cantidad_vidas']} vidas")
-                        else:
-                            #llamar a la funcion mostrar_fin_juego()
-                            retorno = "terminado"
-                            pedir_nombre(
-                                "Ingrese su nombre para el ranking: ",
-                                "!ERROR¡ Nombre demasiado corto, debe tener al menos 3 caracteres. Reingrese un nombre: ",
-                                datos_juego["puntuacion"]
-                            )
+                        #     if datos_juego["puntuacion"] > 0:
+                        #         datos_juego["puntuacion"] -= PUNTUACION_ERROR
+
+                        #     retorno = "juego"
+                            
+                        # else:
+                         
+                        #     retorno = "terminado"
+                        #     pedir_nombre(
+                        #         "Ingrese su nombre para el ranking: ",
+                        #         "!ERROR¡ Nombre demasiado corto, debe tener al menos 3 caracteres. Reingrese un nombre: ",
+                        #         datos_juego["puntuacion"]
+                        #     )
                             
                     indice += 1
                     
@@ -100,35 +116,20 @@ def mostrar_juego(pantalla:pygame.Surface,cola_eventos:list[pygame.event.Event],
 
     
     pantalla.fill(COLOR_VIOLETA)
-    #pantalla.blit(fondo,(0,0))
+
+    tiempo = dibujar_reloj(pantalla, superficie_reloj, 10, 5000)
+    #dibuja las preguntas
+    dibujar_preguntas(pantalla,cuadro_pregunta,pregunta_actual)
+
+    dibujar_respuestas(pantalla, lista_respuestas,pregunta_actual)
     
-    mostrar_texto(cuadro_pregunta["superficie"],f"{pregunta_actual["pregunta"]}",(20,20),FUENTE_27,COLOR_NEGRO)
-    mostrar_texto(lista_respuestas[0]["superficie"],f"{pregunta_actual["respuesta_1"]}",(20,20),FUENTE_22,COLOR_BLANCO)
-    mostrar_texto(lista_respuestas[1]["superficie"],f"{pregunta_actual["respuesta_2"]}",(20,20),FUENTE_22,COLOR_BLANCO)
-    mostrar_texto(lista_respuestas[2]["superficie"],f"{pregunta_actual["respuesta_3"]}",(20,20),FUENTE_22,COLOR_BLANCO)
-
-    mostrar_texto(lista_respuestas[3]["superficie"],f"{pregunta_actual["respuesta_4"]}",(20,20),FUENTE_22,COLOR_BLANCO)
-    
-
-    
-    cuadro_pregunta["rectangulo"] = pantalla.blit(cuadro_pregunta["superficie"],(80,80))
-    lista_respuestas[0]["rectangulo"] = pantalla.blit(lista_respuestas[0]["superficie"],(125,245))#r1
-    lista_respuestas[1]["rectangulo"] = pantalla.blit(lista_respuestas[1]["superficie"],(125,315))#r2
-    lista_respuestas[2]["rectangulo"] = pantalla.blit(lista_respuestas[2]["superficie"],(125,385))#r3
-
-    lista_respuestas[3]["rectangulo"] = pantalla.blit(lista_respuestas[3]["superficie"],(125,455))#r4
-
-
-    
-
-    pygame.draw.rect(pantalla,COLOR_NEGRO,cuadro_pregunta["rectangulo"],2)
-    pygame.draw.rect(pantalla,COLOR_BLANCO,lista_respuestas[0]["rectangulo"],2)
-    pygame.draw.rect(pantalla,COLOR_BLANCO,lista_respuestas[1]["rectangulo"],2)
-    pygame.draw.rect(pantalla,COLOR_BLANCO,lista_respuestas[2]["rectangulo"],2)
-
-    pygame.draw.rect(pantalla,COLOR_BLANCO,lista_respuestas[3]["rectangulo"],2)
+    mostrar_texto(comodin["superficie"], "USAR COMODIN", (20,20), FUENTE_22, COLOR_NEGRO) #-->comodin
+    comodin["rectangulo"] = pantalla.blit(comodin["superficie"],(125,535))
+    comodin["superficie"].fill(COLOR_VERDE_OSCURO)
     
     mostrar_texto(pantalla,f"PUNTUACION: {datos_juego['puntuacion']}",(10,10),FUENTE_25,COLOR_NEGRO)
     mostrar_texto(pantalla,f"VIDAS: {datos_juego['cantidad_vidas']}",(10,40),FUENTE_25,COLOR_NEGRO)
     
     return retorno
+
+   
